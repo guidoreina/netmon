@@ -1,0 +1,35 @@
+CC=g++
+CXXFLAGS=-O3 -std=c++11 -Wall -pedantic -D_GNU_SOURCE -I.
+
+LDFLAGS=
+
+MAKEDEPEND=${CC} -MM
+PROGRAM=evreader
+
+OBJS = string/buffer.o fs/file.o util/parser/number.o \
+       net/mon/event/base.o net/mon/event/icmp.o net/mon/event/udp.o \
+       net/mon/event/dns.o net/mon/event/tcp_begin.o net/mon/event/tcp_data.o \
+       net/mon/event/tcp_end.o net/mon/event/reader.o \
+       evreader.o
+
+DEPS:= ${OBJS:%.o=%.d}
+
+all: $(PROGRAM)
+
+${PROGRAM}: ${OBJS}
+	${CC} ${OBJS} ${LIBS} -o $@ ${LDFLAGS}
+
+clean:
+	rm -f ${PROGRAM} ${OBJS} ${DEPS}
+
+${OBJS} ${DEPS} ${PROGRAM} : Makefile.evreader
+
+.PHONY : all clean
+
+%.d : %.cpp
+	${MAKEDEPEND} ${CXXFLAGS} $< -MT ${@:%.d=%.o} > $@
+
+%.o : %.cpp
+	${CC} ${CXXFLAGS} -c -o $@ $<
+
+-include ${DEPS}
