@@ -12,6 +12,7 @@ enum class output {
   header,
   human_readable,
   json,
+  javascript,
   csv
 };
 
@@ -64,6 +65,14 @@ int main(int argc, const char** argv)
       case output::json:
         {
           net::mon::event::printer::json evprinter(fmt);
+          return process_events(evprinter, infilename, outfilename);
+        }
+      case output::javascript:
+        {
+          net::mon::event::printer::json evprinter(fmt,
+                                                   "let jsonEvents = ",
+                                                   ";");
+
           return process_events(evprinter, infilename, outfilename);
         }
       default:
@@ -145,6 +154,8 @@ bool parse_arguments(int argc,
             out = output::human_readable;
           } else if (strcasecmp(argv[i + 1], "json") == 0) {
             out = output::json;
+          } else if (strcasecmp(argv[i + 1], "javascript") == 0) {
+            out = output::javascript;
           } else if (strcasecmp(argv[i + 1], "csv") == 0) {
             out = output::csv;
           } else {
@@ -332,7 +343,7 @@ void usage(const char* program)
   fprintf(stderr, "  --output <output>\n");
   fprintf(stderr,
           "    <output> ::= \"header\" | \"human-readable\" | \"json\" | "
-          "\"csv\"\n");
+          "\"javascript\" | \"csv\"\n");
 
   fprintf(stderr, "    Default: \"human-readable\"\n");
 

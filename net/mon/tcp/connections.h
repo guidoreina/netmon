@@ -595,6 +595,7 @@ namespace net {
         }
 
         ev.timestamp = now;
+        ev.creation = conn->timestamp.creation;
 
         // Write event.
         _M_evwriter.write(ev);

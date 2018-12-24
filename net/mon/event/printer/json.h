@@ -13,7 +13,9 @@ namespace net {
         class json : public base {
           public:
             // Constructor.
-            json(format fmt = format::pretty_print);
+            json(format fmt = format::pretty_print,
+                 const char* prefix = nullptr,
+                 const char* suffix = nullptr);
 
             // Destructor.
             ~json();
@@ -58,6 +60,9 @@ namespace net {
             // Print format.
             format _M_format;
 
+            const char* const _M_prefix;
+            const char* const _M_suffix;
+
             // Print generic event.
             template<typename Event>
             void print_(uint64_t nevent,
@@ -66,8 +71,10 @@ namespace net {
                         const char* dsthost) const;
         };
 
-        inline json::json(format fmt)
-          : _M_format(fmt)
+        inline json::json(format fmt, const char* prefix, const char* suffix)
+          : _M_format(fmt),
+            _M_prefix(prefix),
+            _M_suffix(suffix)
         {
         }
 
@@ -75,9 +82,9 @@ namespace net {
         {
           if (_M_file) {
             if (_M_format == format::pretty_print) {
-              fprintf(_M_file, "\n]\n");
+              fprintf(_M_file, "\n]%s\n", _M_suffix ? _M_suffix : "");
             } else {
-              fprintf(_M_file, "]");
+              fprintf(_M_file, "]%s", _M_suffix ? _M_suffix : "");
             }
           }
         }
@@ -137,10 +144,20 @@ namespace net {
                                  const char* dsthost) const
         {
           if (_M_format == format::pretty_print) {
-            fprintf(_M_file, "%c\n  {\n", (nevent > 1) ? ',' : '[');
+            if (nevent > 1) {
+              fprintf(_M_file, ",\n  {\n");
+            } else {
+              fprintf(_M_file, "%s[\n  {\n", _M_prefix ? _M_prefix : "");
+            }
+
             fprintf(_M_file, "    \"event-number\": %" PRIu64 ",\n", nevent);
           } else {
-            fprintf(_M_file, "%c{", (nevent > 1) ? ',' : '[');
+            if (nevent > 1) {
+              fprintf(_M_file, ",{");
+            } else {
+              fprintf(_M_file, "%s[{", _M_prefix ? _M_prefix : "");
+            }
+
             fprintf(_M_file, "\"event-number\":%" PRIu64 ",", nevent);
           }
 

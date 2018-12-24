@@ -17,6 +17,9 @@ namespace net {
         // Destination port.
         in_port_t dport;
 
+        // Creation timestamp.
+        uint64_t creation;
+
         // # of bytes sent by the client.
         uint64_t transferred_client;
 
@@ -59,6 +62,7 @@ namespace net {
         return base::size()      + // Size of the base event.
                sizeof(in_port_t) + // Source port.
                sizeof(in_port_t) + // Destination port.
+               8                 + // Creation timestamp.
                8                 + // # of bytes sent by the client.
                8;                  // # of bytes sent by the server.
       }
