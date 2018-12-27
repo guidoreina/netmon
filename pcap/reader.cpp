@@ -70,7 +70,7 @@ void pcap::reader::close()
   }
 }
 
-const void* pcap::reader::next(pcap_pkthdr& hdr)
+const void* pcap::reader::next(pcap_pkthdr& pkthdr)
 {
   if (_M_ptr + sizeof(pcap_pkthdr) <= _M_end) {
     const pcap_pkthdr* h = reinterpret_cast<const pcap_pkthdr*>(_M_ptr);
@@ -79,7 +79,10 @@ const void* pcap::reader::next(pcap_pkthdr& hdr)
     if ((next = _M_ptr + sizeof(pcap_pkthdr) + h->caplen) <= _M_end) {
       _M_ptr = next;
 
-      hdr = *h;
+      pkthdr = *h;
+
+      // Save timestamp of the last packet.
+      _M_timestamp = h->ts;
 
       return reinterpret_cast<const uint8_t*>(h) + sizeof(pcap_pkthdr);
     }

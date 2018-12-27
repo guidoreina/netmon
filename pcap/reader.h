@@ -49,6 +49,9 @@ namespace pcap {
       // Get resolution.
       pcap::resolution resolution() const;
 
+      // Get timestamp of the last packet.
+      const timeval& timestamp() const;
+
     private:
       int _M_fd = -1;
 
@@ -65,6 +68,9 @@ namespace pcap {
 
       // Resolution.
       pcap::resolution _M_resolution;
+
+      // Timestamp of the last packet.
+      timeval _M_timestamp = {};
 
       // Read ethernet file.
       bool read_ethernet(const callbacks& callbacks, void* user);
@@ -113,6 +119,11 @@ namespace pcap {
   inline pcap::resolution reader::resolution() const
   {
     return _M_resolution;
+  }
+
+  inline const timeval& reader::timestamp() const
+  {
+    return _M_timestamp;
   }
 }
 

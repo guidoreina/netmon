@@ -88,6 +88,12 @@ bool process_pcap_file(const net::mon::configuration& config)
 
       // Read PCAP file.
       if (reader.read_all(callbacks, &arg)) {
+        // Remove expired connections.
+        const pcap::timeval& timestamp = reader.timestamp();
+
+        worker.remove_expired((timestamp.tv_sec * 1000000ull) +
+                              timestamp.tv_usec);
+
         return true;
       }
 
