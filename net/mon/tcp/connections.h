@@ -594,7 +594,16 @@ namespace net {
           ev.transferred_server = conn->sent[1];
         }
 
-        ev.timestamp = now;
+        switch (conn->s) {
+          case connection::state::closing:
+          case connection::state::closed:
+          case connection::state::failure:
+            ev.timestamp = conn->timestamp.last_packet;
+            break;
+          default:
+            ev.timestamp = now;
+        }
+
         ev.creation = conn->timestamp.creation;
 
         // Write event.
