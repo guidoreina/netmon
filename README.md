@@ -220,3 +220,6 @@ Options:
     Default: ','
 
 ```
+
+## `qevents`
+Qt program which displays the TCP connections from a JSON file containing events.
