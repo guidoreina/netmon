@@ -9,9 +9,6 @@ namespace net {
       // Event merger.
       class merger {
         public:
-          // Maximum number of input files.
-          static constexpr const size_t max_input_files = 32;
-
           // Merge events in the input files into the output file.
           static bool merge(const char** infiles,
                             size_t ninfiles,
