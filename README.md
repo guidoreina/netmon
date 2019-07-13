@@ -72,6 +72,16 @@ The event files can be viewed using `evreader`, which can dump the events in the
 
 `evreader` has a DNS cache for IPv4 and a DNS cache for IPv6 and can provide (when possible) the source hostname and the destination hostname.
 
+
+## `evconnections`
+Takes as input an event file and generates as output an event file with the "End TCP connection" events. The events can be sorted by:
+
+* Duration
+* Transferred client
+* Transferred server
+* Transferred
+
+
 ## Usages:
 
 ###### `netmon`
@@ -220,6 +230,21 @@ Options:
     Default: ','
 
 ```
+
+
+###### `evconnections`
+```
+Usage: ./evconnections [OPTIONS] --input-filename <filename> --output-filename <filename>
+
+Options:
+  --help
+  --compare <compare-function>
+    <compare-function> ::= "duration" | "transferred-client" | "transferred-server" | "transferred"
+  --order <sort-order>
+    <sort-order> ::= "ascending" | "descending"
+    Default: "ascending"
+```
+
 
 ## `qevents`
 Qt program which displays the TCP connections from a JSON file containing events.
