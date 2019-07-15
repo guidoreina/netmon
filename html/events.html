@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+  <meta charset="utf-8"> 
+  <head>
+    <title>Events</title>
+    <link rel="stylesheet" type="text/css" href="events.css">
+    <script src="events-data.js"></script>
+    <script src="events.js"></script>
+    <script>window.onload = load;</script>
+  </head>
+
+  <body>
+    <label for"dns-clients">DNS clients</label>
+    <select id="dns-clients" size=10 onchange="onip('dns-clients')"></select>
+
+    <label for"ip-addresses">IP addresses</label>
+    <select id="ip-addresses" size=10 onchange="onip('ip-addresses')"></select>
+
+    <label for"hostnames">Hostnames</label>
+    <select id="hostnames" size=10></select>
+
+    <label for"http-servers">HTTP servers</label>
+    <select id="http-servers" size=10></select>
+
+    <label for"https-servers">HTTPS servers</label>
+    <select id="https-servers" size=10></select>
+
+    <div id="all-connections"></div>
+    <div id="single-connection"></div>
+
+    <canvas id="connection-graphic" width=1000 height=1000 />
+  </body>
+</html>
