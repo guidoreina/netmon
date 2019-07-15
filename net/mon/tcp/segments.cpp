@@ -203,6 +203,43 @@ bool net::mon::tcp::segments::add(uint32_t seqno,
   return false;
 }
 
+void net::mon::tcp::segments::fin()
+{
+  if (_M_first_segment != -1) {
+    do {
+      // Save position.
+      ssize_t pos = _M_first_segment;
+
+      segment* first = &_M_segments[pos];
+
+      _M_first_segment = first->next;
+
+      first->next = _M_free_segment;
+      _M_free_segment = pos;
+
+      // If it is not the next sequence number...
+      if (first->seqno != _M_next_seqno) {
+        // Notify gap.
+        _M_gapfn(static_cast<uint32_t>(first->seqno - _M_next_seqno), _M_user);
+      }
+
+      // Notify payload.
+      _M_payloadfn(first->payload, first->len, _M_user);
+
+      // Increment next sequence number.
+      _M_next_seqno = static_cast<uint32_t>(_M_next_seqno + first->len);
+
+      // If it is not the last segment...
+      if (_M_first_segment != -1) {
+        _M_segments[_M_first_segment].prev = -1;
+      } else {
+        _M_last_segment = -1;
+        return;
+      }
+    } while (true);
+  }
+}
+
 void net::mon::tcp::segments::check_payloads()
 {
   if (_M_first_segment != -1) {

@@ -32,6 +32,9 @@ namespace net {
           // Add segment.
           bool add(uint32_t seqno, const void* payload, size_t len);
 
+          // FIN has been received.
+          void fin();
+
           // Set next sequence number.
           void next_sequence_number(uint32_t seqno);
 
