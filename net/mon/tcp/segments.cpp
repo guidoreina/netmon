@@ -66,7 +66,7 @@ bool net::mon::tcp::segments::add(uint32_t seqno,
 
         // If the sequence number hasn't wrapped around...
         if ((seqno >= _M_segments[i].seqno) ||
-            (_M_segments[i].seqno - seqno < 0x7fffffff)) {
+            (_M_segments[i].seqno - seqno < 0x80000000u)) {
           do {
             cur = &_M_segments[i];
 
