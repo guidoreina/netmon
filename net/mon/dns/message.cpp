@@ -155,13 +155,16 @@ bool net::mon::dns::message::parse_domain_name(char* domain, uint8_t& domainlen)
         } else {
           // Null label.
 
-          domainlen = static_cast<uint8_t>(len);
+          // If not the root domain name...
+          if ((domainlen = static_cast<uint8_t>(len)) > 0) {
+            if (npointers == 0) {
+              _M_off = off + 1;
+            }
 
-          if (npointers == 0) {
-            _M_off = off + 1;
+            return true;
+          } else {
+            return false;
           }
-
-          return true;
         }
 
         break;
