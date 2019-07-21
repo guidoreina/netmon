@@ -7,6 +7,7 @@
 #include "net/mon/event/printer/human_readable.h"
 #include "net/mon/event/printer/json.h"
 #include "net/mon/event/printer/csv.h"
+#include "net/mon/event/grammar/parser.h"
 
 enum class output {
   header,
@@ -21,20 +22,24 @@ static constexpr const output default_output = output::human_readable;
 static constexpr const net::mon::event::printer::format
        default_format = net::mon::event::printer::format::pretty_print;
 
-static bool parse_arguments(int argc,
-                            const char** argv,
-                            const char*& infilename,
-                            const char*& outfilename,
-                            output& out,
-                            net::mon::event::printer::format& fmt,
-                            char& csv_separator);
+static
+bool parse_arguments(int argc,
+                     const char** argv,
+                     const char*& infilename,
+                     const char*& outfilename,
+                     output& out,
+                     net::mon::event::printer::format& fmt,
+                     char& csv_separator,
+                     net::mon::event::grammar::conditional_expression*& filter);
 
 static int print_header(const char* infilename, const char* outfilename);
 
 template<typename Printer>
-static int process_events(Printer& evprinter,
-                          const char* infilename,
-                          const char* outfilename);
+static int
+process_events(Printer& evprinter,
+               const char* infilename,
+               const char* outfilename,
+               const net::mon::event::grammar::conditional_expression* filter);
 
 static void usage(const char* program);
 
@@ -45,6 +50,7 @@ int main(int argc, const char** argv)
   output out;
   net::mon::event::printer::format fmt;
   char csv_separator;
+  net::mon::event::grammar::conditional_expression* filter;
 
   // Parse command-line arguments.
   if (parse_arguments(argc,
@@ -53,19 +59,23 @@ int main(int argc, const char** argv)
                       outfilename,
                       out,
                       fmt,
-                      csv_separator)) {
+                      csv_separator,
+                      filter)) {
+    memory::unique_ptr<net::mon::event::grammar::conditional_expression>
+      f(filter);
+
     switch (out) {
       case output::header:
         return print_header(infilename, outfilename);
       case output::human_readable:
         {
           net::mon::event::printer::human_readable evprinter(fmt);
-          return process_events(evprinter, infilename, outfilename);
+          return process_events(evprinter, infilename, outfilename, filter);
         }
       case output::json:
         {
           net::mon::event::printer::json evprinter(fmt);
-          return process_events(evprinter, infilename, outfilename);
+          return process_events(evprinter, infilename, outfilename, filter);
         }
       case output::javascript:
         {
@@ -73,14 +83,18 @@ int main(int argc, const char** argv)
                                                    "let jsonEvents = ",
                                                    ";");
 
-          return process_events(evprinter, infilename, outfilename);
+          return process_events(evprinter, infilename, outfilename, filter);
         }
       default:
         {
           net::mon::event::printer::csv evprinter(csv_separator);
-          return process_events(evprinter, infilename, outfilename);
+          return process_events(evprinter, infilename, outfilename, filter);
         }
     }
+  }
+
+  if (filter) {
+    delete filter;
   }
 
   usage(argv[0]);
@@ -94,7 +108,8 @@ bool parse_arguments(int argc,
                      const char*& outfilename,
                      output& out,
                      net::mon::event::printer::format& fmt,
-                     char& csv_separator)
+                     char& csv_separator,
+                     net::mon::event::grammar::conditional_expression*& filter)
 {
   // Set default values.
   infilename = nullptr;
@@ -102,6 +117,7 @@ bool parse_arguments(int argc,
   out = default_output;
   fmt = default_format;
   csv_separator = net::mon::event::printer::csv::default_separator;
+  filter = nullptr;
 
   bool have_output = false;
   bool have_format = false;
@@ -225,6 +241,26 @@ bool parse_arguments(int argc,
 
         return false;
       }
+    } else if (strcasecmp(argv[i], "--filter") == 0) {
+      // If not the last argument...
+      if (i + 1 < argc) {
+        // If the filter has not been already set...
+        if (!filter) {
+          if ((filter = net::mon::event::grammar::parser::parse(argv[i + 1])) !=
+              nullptr) {
+            i += 2;
+          } else {
+            fprintf(stderr, "Invalid filter '%s'.\n\n", argv[i + 1]);
+            return false;
+          }
+        } else {
+          fprintf(stderr, "\"--filter\" appears more than once.\n\n");
+          return false;
+        }
+      } else {
+        fprintf(stderr, "Expected filter after \"--filter\".\n\n");
+        return false;
+      }
     } else if (strcasecmp(argv[i], "--help") == 0) {
       return false;
     } else {
@@ -299,9 +335,11 @@ int print_header(const char* infilename, const char* outfilename)
 }
 
 template<typename Printer>
-int process_events(Printer& evprinter,
-                   const char* infilename,
-                   const char* outfilename)
+int
+process_events(Printer& evprinter,
+               const char* infilename,
+               const char* outfilename,
+               const net::mon::event::grammar::conditional_expression* filter)
 {
   // Open event file.
   net::mon::event::reader evreader(&evprinter);
@@ -317,7 +355,7 @@ int process_events(Printer& evprinter,
     }
 
     // Read events.
-    while (evreader.next());
+    while (evreader.next(filter));
 
     return 0;
   } else {
@@ -356,6 +394,86 @@ void usage(const char* program)
   fprintf(stderr,
           "    Default: '%c'\n",
           net::mon::event::printer::csv::default_separator);
+
+  fprintf(stderr, "  --filter <expression>\n");
+
+  fprintf(stderr, "    <expression> ::= (<expression>)\n");
+  fprintf(stderr,
+          "    <expression> ::= <expression> <logical-operator> "
+          "<expression>\n");
+
+  fprintf(stderr,
+          "    <expression> ::= <identifier> <relational-operator> <value>\n");
+
+  fprintf(stderr, "\n");
+
+  fprintf(stderr, "    <logical-operator> ::= \"&&\" | \"||\"\n");
+
+  fprintf(stderr, "\n");
+
+  fprintf(stderr,
+          "    <relational-operator> ::= \"==\" | \"!=\" | \"<\" | \">\" | "
+          "\"<=\" | \">=\"\n");
+
+  fprintf(stderr, "\n");
+
+  fprintf(stderr,
+          "    <identifier> ::= \"date\"                 |\n"
+          "                     \"event_type\"           |\n"
+          "                     \"source_ip\"            |\n"
+          "                     \"source_hostname\"      |\n"
+          "                     \"source_port\"          |\n"
+          "                     \"destination_ip\"       |\n"
+          "                     \"destination_hostname\" |\n"
+          "                     \"destination_port\"     |\n"
+          "                     \"ip\"                   |\n"
+          "                     \"hostname\"             |\n"
+          "                     \"port\"                 |\n"
+          "                     \"icmp_type\"            |\n"
+          "                     \"icmp_code\"            |\n"
+          "                     \"transferred\"          |\n"
+          "                     \"query_type\"           |\n"
+          "                     \"domain\"               |\n"
+          "                     \"number_dns_responses\" |\n"
+          "                     \"dns_response\"         |\n"
+          "                     \"payload\"              |\n"
+          "                     \"creation\"             |\n"
+          "                     \"duration\"             |\n"
+          "                     \"transferred_client\"   |\n"
+          "                     \"transferred_server\"\n");
+
+  fprintf(stderr, "\n");
+
+  fprintf(stderr,
+          "    <value> ::= <event-type>   |\n"
+          "                <number>       |\n"
+          "                <string>       |\n"
+          "                <timestamp>    |\n"
+          "                <hostname>     |\n"
+          "                <duration>     |\n"
+          "                <network-mask>\n");
+
+  fprintf(stderr, "\n");
+
+  fprintf(stderr,
+          "    <event-type> ::= \"icmp\"      |\n"
+          "                     \"udp\"       |\n"
+          "                     \"dns\"       |\n"
+          "                     \"tcp-begin\" |\n"
+          "                     \"tcp-data\"  |\n"
+          "                     \"tcp-end\"\n");
+
+  fprintf(stderr, "\n");
+
+  fprintf(stderr, "    <string> ::= \"<character>*\"\n");
+
+  fprintf(stderr,
+          "    <timestamp> ::= timestamp with the format "
+          "YYYY/MM/DD hh:mm:ss[.uuuuuu]\n");
+
+  fprintf(stderr, "    <duration> ::= connection duration in seconds\n");
+
+  fprintf(stderr, "    <network-mask> ::= network address in CIDR notation\n");
 
   fprintf(stderr, "\n");
 }

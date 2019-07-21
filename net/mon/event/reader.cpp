@@ -44,7 +44,7 @@ bool net::mon::event::reader::open(const char* filename)
   return false;
 }
 
-bool net::mon::event::reader::next()
+bool net::mon::event::reader::next(const grammar::conditional_expression* expr)
 {
   if (_M_printer) {
     size_t left;
@@ -61,10 +61,13 @@ bool net::mon::event::reader::next()
               // Build 'ICMP' event.
               icmp ev;
               if (ev.build(_M_ptr, len)) {
-                _M_printer->print(++_M_nevent,
-                                  ev,
-                                  source_host(ev),
-                                  destination_host(ev));
+                const char* srchostname = source_host(ev);
+                const char* desthostname = destination_host(ev);
+
+                if ((!expr) ||
+                    (expr->evaluate(ev, srchostname, desthostname))) {
+                  _M_printer->print(++_M_nevent, ev, srchostname, desthostname);
+                }
 
                 _M_ptr += len;
 
@@ -80,10 +83,13 @@ bool net::mon::event::reader::next()
               // Build 'UDP' event.
               udp ev;
               if (ev.build(_M_ptr, len)) {
-                _M_printer->print(++_M_nevent,
-                                  ev,
-                                  source_host(ev),
-                                  destination_host(ev));
+                const char* srchostname = source_host(ev);
+                const char* desthostname = destination_host(ev);
+
+                if ((!expr) ||
+                    (expr->evaluate(ev, srchostname, desthostname))) {
+                  _M_printer->print(++_M_nevent, ev, srchostname, desthostname);
+                }
 
                 _M_ptr += len;
 
@@ -128,7 +134,9 @@ bool net::mon::event::reader::next()
                   }
                 }
 
-                _M_printer->print(++_M_nevent, ev, nullptr, nullptr);
+                if ((!expr) || (expr->evaluate(ev, nullptr, nullptr))) {
+                  _M_printer->print(++_M_nevent, ev, nullptr, nullptr);
+                }
 
                 _M_ptr += len;
 
@@ -144,10 +152,13 @@ bool net::mon::event::reader::next()
               // Build 'Begin TCP connection' event.
               tcp_begin ev;
               if (ev.build(_M_ptr, len)) {
-                _M_printer->print(++_M_nevent,
-                                  ev,
-                                  source_host(ev),
-                                  destination_host(ev));
+                const char* srchostname = source_host(ev);
+                const char* desthostname = destination_host(ev);
+
+                if ((!expr) ||
+                    (expr->evaluate(ev, srchostname, desthostname))) {
+                  _M_printer->print(++_M_nevent, ev, srchostname, desthostname);
+                }
 
                 _M_ptr += len;
 
@@ -163,10 +174,13 @@ bool net::mon::event::reader::next()
               // Build 'TCP data' event.
               tcp_data ev;
               if (ev.build(_M_ptr, len)) {
-                _M_printer->print(++_M_nevent,
-                                  ev,
-                                  source_host(ev),
-                                  destination_host(ev));
+                const char* srchostname = source_host(ev);
+                const char* desthostname = destination_host(ev);
+
+                if ((!expr) ||
+                    (expr->evaluate(ev, srchostname, desthostname))) {
+                  _M_printer->print(++_M_nevent, ev, srchostname, desthostname);
+                }
 
                 _M_ptr += len;
 
@@ -182,10 +196,13 @@ bool net::mon::event::reader::next()
               // Build 'End TCP connection' event.
               tcp_end ev;
               if (ev.build(_M_ptr, len)) {
-                _M_printer->print(++_M_nevent,
-                                  ev,
-                                  source_host(ev),
-                                  destination_host(ev));
+                const char* srchostname = source_host(ev);
+                const char* desthostname = destination_host(ev);
+
+                if ((!expr) ||
+                    (expr->evaluate(ev, srchostname, desthostname))) {
+                  _M_printer->print(++_M_nevent, ev, srchostname, desthostname);
+                }
 
                 _M_ptr += len;
 

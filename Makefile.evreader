@@ -6,10 +6,12 @@ LDFLAGS=
 MAKEDEPEND=${CC} -MM
 PROGRAM=evreader
 
-OBJS = string/buffer.o fs/file.o util/parser/number.o \
-       net/mon/event/base.o net/mon/event/icmp.o net/mon/event/udp.o \
-       net/mon/event/dns.o net/mon/event/tcp_begin.o net/mon/event/tcp_data.o \
+OBJS = string/buffer.o fs/file.o util/parser/number.o net/mon/event/base.o \
+       net/mon/event/icmp.o net/mon/event/udp.o net/mon/event/dns.o \
+       net/mon/event/tcp_begin.o net/mon/event/tcp_data.o \
        net/mon/event/tcp_end.o net/mon/event/reader.o \
+       net/mon/event/grammar/expressions.o net/mon/event/grammar/parser.o \
+       net/mask.o \
        evreader.o
 
 DEPS:= ${OBJS:%.o=%.d}

@@ -7,6 +7,7 @@
 #include "net/mon/event/events.h"
 #include "net/mon/event/file.h"
 #include "net/mon/event/printer/base.h"
+#include "net/mon/event/grammar/expressions.h"
 #include "net/mon/dns/inverted_cache.h"
 #include "net/mon/ipv4/address.h"
 #include "net/mon/ipv6/address.h"
@@ -31,7 +32,7 @@ namespace net {
           void close();
 
           // Get next event.
-          bool next();
+          bool next(const grammar::conditional_expression* expr = nullptr);
 
           // Get next event.
           bool next(const void*& event, size_t& len, uint64_t& timestamp);
