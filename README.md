@@ -228,6 +228,58 @@ Options:
   --csv-separator <character>
     <character>: CSV character separator.
     Default: ','
+  --filter <expression>
+    <expression> ::= (<expression>)
+    <expression> ::= <expression> <logical-operator> <expression>
+    <expression> ::= <identifier> <relational-operator> <value>
+
+    <logical-operator> ::= "&&" | "||"
+
+    <relational-operator> ::= "==" | "!=" | "<" | ">" | "<=" | ">="
+
+    <identifier> ::= "date"                 |
+                     "event_type"           |
+                     "source_ip"            |
+                     "source_hostname"      |
+                     "source_port"          |
+                     "destination_ip"       |
+                     "destination_hostname" |
+                     "destination_port"     |
+                     "ip"                   |
+                     "hostname"             |
+                     "port"                 |
+                     "icmp_type"            |
+                     "icmp_code"            |
+                     "transferred"          |
+                     "query_type"           |
+                     "domain"               |
+                     "number_dns_responses" |
+                     "dns_response"         |
+                     "payload"              |
+                     "creation"             |
+                     "duration"             |
+                     "transferred_client"   |
+                     "transferred_server"
+
+    <value> ::= <event-type>   |
+                <number>       |
+                <string>       |
+                <timestamp>    |
+                <hostname>     |
+                <duration>     |
+                <network-mask>
+
+    <event-type> ::= "icmp"      |
+                     "udp"       |
+                     "dns"       |
+                     "tcp-begin" |
+                     "tcp-data"  |
+                     "tcp-end"
+
+    <string> ::= "<character>*"
+    <timestamp> ::= timestamp with the format YYYY/MM/DD hh:mm:ss[.uuuuuu]
+    <duration> ::= connection duration in seconds
+    <network-mask> ::= network address in CIDR notation
 
 ```
 
