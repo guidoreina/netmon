@@ -37,24 +37,19 @@ bool net::mon::tcp::segments::add(uint32_t seqno,
     do {
       // If it is the next sequence number...
       if (seqno == _M_next_seqno) {
-        // If it is the first segment or the segments don't overlap...
-        if ((_M_first_segment == -1) ||
-            (static_cast<uint32_t>(seqno + len) <=
-             _M_segments[_M_first_segment].seqno)) {
-          // Notify payload.
-          _M_payloadfn(payload, len, _M_user);
+        // Notify payload.
+        _M_payloadfn(payload, len, _M_user);
 
-          // Increment next sequence number.
-          _M_next_seqno = static_cast<uint32_t>(_M_next_seqno + len);
+        // Increment next sequence number.
+        _M_next_seqno = static_cast<uint32_t>(_M_next_seqno + len);
 
-          // Check payloads.
-          check_payloads();
+        // Check payloads.
+        check_payloads();
 
-          return true;
-        } else {
-          // Invalid sequence number / length.
-          return false;
-        }
+        return true;
+      } else if (static_cast<uint32_t>(_M_next_seqno - seqno) < 0x80000000u) {
+        // Old segment.
+        return false;
       }
 
       // If there are already segments...
@@ -65,8 +60,7 @@ bool net::mon::tcp::segments::add(uint32_t seqno,
         ssize_t i = _M_last_segment;
 
         // If the sequence number hasn't wrapped around...
-        if ((seqno >= _M_segments[i].seqno) ||
-            (_M_segments[i].seqno - seqno < 0x80000000u)) {
+        if (seqno >= _M_next_seqno) {
           do {
             cur = &_M_segments[i];
 
@@ -217,17 +211,14 @@ void net::mon::tcp::segments::fin()
       first->next = _M_free_segment;
       _M_free_segment = pos;
 
-      // If it is not the next sequence number...
-      if (first->seqno != _M_next_seqno) {
-        // Notify gap.
-        _M_gapfn(static_cast<uint32_t>(first->seqno - _M_next_seqno), _M_user);
+      // If it is the next sequence number...
+      if (first->seqno == _M_next_seqno) {
+        // Notify payload.
+        _M_payloadfn(first->payload, first->len, _M_user);
+
+        // Increment next sequence number.
+        _M_next_seqno = static_cast<uint32_t>(_M_next_seqno + first->len);
       }
-
-      // Notify payload.
-      _M_payloadfn(first->payload, first->len, _M_user);
-
-      // Increment next sequence number.
-      _M_next_seqno = static_cast<uint32_t>(_M_next_seqno + first->len);
 
       // If it is not the last segment...
       if (_M_first_segment != -1) {
@@ -243,7 +234,7 @@ void net::mon::tcp::segments::fin()
 void net::mon::tcp::segments::check_payloads()
 {
   if (_M_first_segment != -1) {
-    while (_M_segments[_M_first_segment].seqno == _M_next_seqno) {
+    while (_M_segments[_M_first_segment].seqno <= _M_next_seqno) {
       // Save position.
       ssize_t pos = _M_first_segment;
 
@@ -254,11 +245,14 @@ void net::mon::tcp::segments::check_payloads()
       first->next = _M_free_segment;
       _M_free_segment = pos;
 
-      // Notify payload.
-      _M_payloadfn(first->payload, first->len, _M_user);
+      // If it is the next sequence number...
+      if (first->seqno == _M_next_seqno) {
+        // Notify payload.
+        _M_payloadfn(first->payload, first->len, _M_user);
 
-      // Increment next sequence number.
-      _M_next_seqno = static_cast<uint32_t>(_M_next_seqno + first->len);
+        // Increment next sequence number.
+        _M_next_seqno = static_cast<uint32_t>(_M_next_seqno + first->len);
+      }
 
       // If it is not the last segment...
       if (_M_first_segment != -1) {
