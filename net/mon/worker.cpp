@@ -80,7 +80,7 @@ bool net::mon::worker::icmp(const struct iphdr* iphdr,
     return true;
   }
 
-  return false;
+  return true;
 }
 
 bool net::mon::worker::icmpv6(const struct ip6_hdr* iphdr,
@@ -116,7 +116,7 @@ bool net::mon::worker::icmpv6(const struct ip6_hdr* iphdr,
     return true;
   }
 
-  return false;
+  return true;
 }
 
 bool net::mon::worker::tcp_ipv4(const struct iphdr* iphdr,
@@ -149,7 +149,7 @@ bool net::mon::worker::tcp_ipv4(const struct iphdr* iphdr,
     }
   }
 
-  return false;
+  return true;
 }
 
 bool net::mon::worker::tcp_ipv6(const struct ip6_hdr* iphdr,
@@ -182,7 +182,7 @@ bool net::mon::worker::tcp_ipv6(const struct ip6_hdr* iphdr,
     }
   }
 
-  return false;
+  return true;
 }
 
 bool net::mon::worker::udp_ipv4(const struct iphdr* iphdr,
@@ -250,7 +250,7 @@ bool net::mon::worker::udp_ipv4(const struct iphdr* iphdr,
     }
   }
 
-  return false;
+  return true;
 }
 
 bool net::mon::worker::udp_ipv6(const struct ip6_hdr* iphdr,
@@ -318,5 +318,5 @@ bool net::mon::worker::udp_ipv6(const struct ip6_hdr* iphdr,
     }
   }
 
-  return false;
+  return true;
 }
