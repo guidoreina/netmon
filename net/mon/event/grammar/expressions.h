@@ -273,8 +273,10 @@ namespace net {
         class equality_expression : public event_expression {
           public:
             enum class equality_operator : unsigned {
-              equal_to = relational_operator::equal_to,
-              not_equal_to = relational_operator::not_equal_to
+              equal_to = static_cast<unsigned>(relational_operator::equal_to),
+              not_equal_to = static_cast<unsigned>(
+                               relational_operator::not_equal_to
+                             )
             };
 
             // Constructor.
@@ -357,10 +359,19 @@ namespace net {
         class relational_expression : public event_expression {
           public:
             enum class relational_operator : unsigned {
-              less = grammar::relational_operator::less,
-              greater = grammar::relational_operator::greater,
-              less_or_equal = grammar::relational_operator::less_or_equal,
-              greater_or_equal = grammar::relational_operator::greater_or_equal
+              less = static_cast<unsigned>(grammar::relational_operator::less),
+              greater = static_cast<unsigned>(
+                          grammar::relational_operator::greater
+                        ),
+
+              less_or_equal = static_cast<unsigned>(
+                                grammar::relational_operator::less_or_equal
+                              ),
+
+              greater_or_equal =
+                static_cast<unsigned>(
+                  grammar::relational_operator::greater_or_equal
+                )
             };
 
             // Constructor.
