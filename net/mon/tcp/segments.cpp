@@ -60,7 +60,7 @@ bool net::mon::tcp::segments::add(uint32_t seqno,
         ssize_t i = _M_last_segment;
 
         // If the sequence number hasn't wrapped around...
-        if (seqno >= _M_next_seqno) {
+        if (seqno > _M_next_seqno) {
           do {
             cur = &_M_segments[i];
 
