@@ -17,6 +17,9 @@ namespace net {
         // Destination port.
         in_port_t dport;
 
+        // Creation timestamp.
+        uint64_t creation;
+
         // # of bytes of payload.
         uint16_t payload;
 
@@ -56,6 +59,7 @@ namespace net {
         return base::size()      + // Size of the base event.
                sizeof(in_port_t) + // Source port.
                sizeof(in_port_t) + // Destination port.
+               8                 + // Creation timestamp.
                2;                  // Payload.
       }
     }

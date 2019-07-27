@@ -143,7 +143,8 @@ namespace net {
                               in_port_t port2,
                               uint16_t payload_size,
                               connection::direction dir,
-                              uint64_t now);
+                              uint64_t now,
+                              uint64_t creation);
 
           // Generate 'End TCP connection' event.
           void event_tcp_end(const connection_type* conn, uint64_t now);
@@ -419,7 +420,8 @@ namespace net {
                                    port2,
                                    payload_size,
                                    dir,
-                                   now);
+                                   now,
+                                   conn->timestamp.creation);
                   }
 
                   return true;
@@ -536,7 +538,8 @@ namespace net {
                                                    in_port_t port2,
                                                    uint16_t payload_size,
                                                    connection::direction dir,
-                                                   uint64_t now)
+                                                   uint64_t now,
+                                                   uint64_t creation)
       {
         event::tcp_data ev;
 
@@ -558,6 +561,8 @@ namespace net {
         }
 
         ev.timestamp = now;
+
+        ev.creation = creation;
 
         ev.payload = payload_size;
 

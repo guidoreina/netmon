@@ -44,6 +44,7 @@ Network monitor for Linux.
   * Source port
   * Destination address
   * Destination port
+  * Creation timestamp
   * Number of bytes of payload
 
 * End TCP connection: containing the following information:
