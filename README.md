@@ -70,7 +70,7 @@ The event files can be viewed using `evreader`, which can dump the events in the
 * JSON
 * Javascript
 * CSV
-* SQLite database.
+* SQLite database
 
 `evreader` has a DNS cache for IPv4 and a DNS cache for IPv6 and can provide (when possible) the source hostname and the destination hostname.
 

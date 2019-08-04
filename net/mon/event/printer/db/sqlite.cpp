@@ -60,10 +60,10 @@ net::mon::event::printer::db::sqlite::print(uint64_t nevent,
   if ((bind(idx, ev, srchost, dsthost)) &&
       (sqlite3_bind_int64(_M_statements[idx],
                           6,
-                          ev.sport) == SQLITE_OK) &&
+                          ntohs(ev.sport)) == SQLITE_OK) &&
       (sqlite3_bind_int64(_M_statements[idx],
                           7,
-                          ev.dport) == SQLITE_OK) &&
+                          ntohs(ev.dport)) == SQLITE_OK) &&
       (sqlite3_bind_int64(_M_statements[idx],
                           8,
                           ev.transferred) == SQLITE_OK)) {
@@ -84,10 +84,10 @@ net::mon::event::printer::db::sqlite::print(uint64_t nevent,
     if ((bind(idx, ev)) &&
         (sqlite3_bind_int64(_M_statements[idx],
                             4,
-                            ev.sport) == SQLITE_OK) &&
+                            ntohs(ev.sport)) == SQLITE_OK) &&
         (sqlite3_bind_int64(_M_statements[idx],
                             5,
-                            ev.dport) == SQLITE_OK) &&
+                            ntohs(ev.dport)) == SQLITE_OK) &&
         (sqlite3_bind_int64(_M_statements[idx],
                             6,
                             ev.transferred) == SQLITE_OK) &&
@@ -139,10 +139,10 @@ net::mon::event::printer::db::sqlite::print(uint64_t nevent,
   if ((bind(idx, ev, srchost, dsthost)) &&
       (sqlite3_bind_int64(_M_statements[idx],
                           6,
-                          ev.sport) == SQLITE_OK) &&
+                          ntohs(ev.sport)) == SQLITE_OK) &&
       (sqlite3_bind_int64(_M_statements[idx],
                           7,
-                          ev.dport) == SQLITE_OK)) {
+                          ntohs(ev.dport)) == SQLITE_OK)) {
     sqlite3_step(_M_statements[idx]);
   }
 }
@@ -158,10 +158,10 @@ net::mon::event::printer::db::sqlite::print(uint64_t nevent,
   if ((bind(idx, ev, srchost, dsthost)) &&
       (sqlite3_bind_int64(_M_statements[idx],
                           6,
-                          ev.sport) == SQLITE_OK) &&
+                          ntohs(ev.sport)) == SQLITE_OK) &&
       (sqlite3_bind_int64(_M_statements[idx],
                           7,
-                          ev.dport) == SQLITE_OK) &&
+                          ntohs(ev.dport)) == SQLITE_OK) &&
       (sqlite3_bind_int64(_M_statements[idx],
                           8,
                           ev.creation) == SQLITE_OK) &&
@@ -183,10 +183,10 @@ net::mon::event::printer::db::sqlite::print(uint64_t nevent,
   if ((bind(idx, ev, srchost, dsthost)) &&
       (sqlite3_bind_int64(_M_statements[idx],
                           6,
-                          ev.sport) == SQLITE_OK) &&
+                          ntohs(ev.sport)) == SQLITE_OK) &&
       (sqlite3_bind_int64(_M_statements[idx],
                           7,
-                          ev.dport) == SQLITE_OK) &&
+                          ntohs(ev.dport)) == SQLITE_OK) &&
       (sqlite3_bind_int64(_M_statements[idx],
                           8,
                           ev.creation) == SQLITE_OK) &&
