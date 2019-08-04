@@ -31,37 +31,37 @@ namespace net {
             virtual void print(uint64_t nevent,
                                const event::icmp& ev,
                                const char* srchost,
-                               const char* dsthost) const = 0;
+                               const char* dsthost) = 0;
 
             // Print 'UDP' event.
             virtual void print(uint64_t nevent,
                                const event::udp& ev,
                                const char* srchost,
-                               const char* dsthost) const = 0;
+                               const char* dsthost) = 0;
 
             // Print 'DNS' event.
             virtual void print(uint64_t nevent,
                                const event::dns& ev,
                                const char* srchost,
-                               const char* dsthost) const = 0;
+                               const char* dsthost) = 0;
 
             // Print 'Begin TCP connection' event.
             virtual void print(uint64_t nevent,
                                const event::tcp_begin& ev,
                                const char* srchost,
-                               const char* dsthost) const = 0;
+                               const char* dsthost) = 0;
 
             // Print 'TCP data' event.
             virtual void print(uint64_t nevent,
                                const event::tcp_data& ev,
                                const char* srchost,
-                               const char* dsthost) const = 0;
+                               const char* dsthost) = 0;
 
             // Print 'End TCP connection' event.
             virtual void print(uint64_t nevent,
                                const event::tcp_end& ev,
                                const char* srchost,
-                               const char* dsthost) const = 0;
+                               const char* dsthost) = 0;
 
           protected:
             // File.

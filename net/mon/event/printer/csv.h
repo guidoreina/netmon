@@ -21,37 +21,37 @@ namespace net {
             void print(uint64_t nevent,
                        const event::icmp& ev,
                        const char* srchost,
-                       const char* dsthost) const final;
+                       const char* dsthost) final;
 
             // Print 'UDP' event.
             void print(uint64_t nevent,
                        const event::udp& ev,
                        const char* srchost,
-                       const char* dsthost) const final;
+                       const char* dsthost) final;
 
             // Print 'DNS' event.
             void print(uint64_t nevent,
                        const event::dns& ev,
                        const char* srchost,
-                       const char* dsthost) const final;
+                       const char* dsthost) final;
 
             // Print 'Begin TCP connection' event.
             void print(uint64_t nevent,
                        const event::tcp_begin& ev,
                        const char* srchost,
-                       const char* dsthost) const final;
+                       const char* dsthost) final;
 
             // Print 'TCP data' event.
             void print(uint64_t nevent,
                        const event::tcp_data& ev,
                        const char* srchost,
-                       const char* dsthost) const final;
+                       const char* dsthost) final;
 
             // Print 'End TCP connection' event.
             void print(uint64_t nevent,
                        const event::tcp_end& ev,
                        const char* srchost,
-                       const char* dsthost) const final;
+                       const char* dsthost) final;
 
           private:
             // CSV separator.
@@ -73,7 +73,7 @@ namespace net {
         inline void csv::print(uint64_t nevent,
                                const event::icmp& ev,
                                const char* srchost,
-                               const char* dsthost) const
+                               const char* dsthost)
         {
           print_(nevent, ev, srchost, dsthost);
         }
@@ -81,7 +81,7 @@ namespace net {
         inline void csv::print(uint64_t nevent,
                                const event::udp& ev,
                                const char* srchost,
-                               const char* dsthost) const
+                               const char* dsthost)
         {
           print_(nevent, ev, srchost, dsthost);
         }
@@ -89,7 +89,7 @@ namespace net {
         inline void csv::print(uint64_t nevent,
                                const event::dns& ev,
                                const char* srchost,
-                               const char* dsthost) const
+                               const char* dsthost)
         {
           print_(nevent, ev, srchost, dsthost);
         }
@@ -97,7 +97,7 @@ namespace net {
         inline void csv::print(uint64_t nevent,
                                const event::tcp_begin& ev,
                                const char* srchost,
-                               const char* dsthost) const
+                               const char* dsthost)
         {
           print_(nevent, ev, srchost, dsthost);
         }
@@ -105,7 +105,7 @@ namespace net {
         inline void csv::print(uint64_t nevent,
                                const event::tcp_data& ev,
                                const char* srchost,
-                               const char* dsthost) const
+                               const char* dsthost)
         {
           print_(nevent, ev, srchost, dsthost);
         }
@@ -113,7 +113,7 @@ namespace net {
         inline void csv::print(uint64_t nevent,
                                const event::tcp_end& ev,
                                const char* srchost,
-                               const char* dsthost) const
+                               const char* dsthost)
         {
           print_(nevent, ev, srchost, dsthost);
         }

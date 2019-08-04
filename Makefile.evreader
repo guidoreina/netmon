@@ -1,7 +1,14 @@
 CC=g++
 CXXFLAGS=-O3 -std=c++11 -Wall -pedantic -D_GNU_SOURCE -I.
 
+# Is SQLite available?
+CXXFLAGS+=-DHAVE_SQLITE
+
 LDFLAGS=
+
+ifneq (,$(findstring HAVE_SQLITE, $(CXXFLAGS)))
+LDFLAGS=-lsqlite3
+endif
 
 MAKEDEPEND=${CC} -MM
 PROGRAM=evreader
@@ -13,6 +20,10 @@ OBJS = string/buffer.o fs/file.o util/parser/number.o net/mon/event/base.o \
        net/mon/event/grammar/expressions.o net/mon/event/grammar/parser.o \
        net/mask.o \
        evreader.o
+
+ifneq (,$(findstring HAVE_SQLITE, $(CXXFLAGS)))
+OBJS+=net/mon/event/printer/db/sqlite.o
+endif
 
 DEPS:= ${OBJS:%.o=%.d}
 

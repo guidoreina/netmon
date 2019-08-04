@@ -20,7 +20,7 @@ namespace net {
         public:
           // Constructor.
           reader() = default;
-          reader(const printer::base* printer);
+          reader(printer::base* printer);
 
           // Destructor.
           ~reader();
@@ -61,7 +61,7 @@ namespace net {
           file::header _M_header;
 
           // Printer.
-          const printer::base* _M_printer = nullptr;
+          printer::base* _M_printer = nullptr;
 
           // Event number.
           uint64_t _M_nevent = 0;
@@ -88,7 +88,7 @@ namespace net {
           reader& operator=(const reader&) = delete;
       };
 
-      inline reader::reader(const printer::base* printer)
+      inline reader::reader(printer::base* printer)
         : _M_printer(printer)
       {
       }

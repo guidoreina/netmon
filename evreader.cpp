@@ -9,12 +9,20 @@
 #include "net/mon/event/printer/csv.h"
 #include "net/mon/event/grammar/parser.h"
 
+#if HAVE_SQLITE
+  #include "net/mon/event/printer/db/sqlite.h"
+#endif
+
 enum class output {
   header,
   human_readable,
   json,
   javascript,
   csv
+
+#if HAVE_SQLITE
+  , sqlite
+#endif
 };
 
 static constexpr const output default_output = output::human_readable;
@@ -85,11 +93,42 @@ int main(int argc, const char** argv)
 
           return process_events(evprinter, infilename, outfilename, filter);
         }
+      case output::csv:
+#if !HAVE_SQLITE
       default:
+#endif
         {
           net::mon::event::printer::csv evprinter(csv_separator);
           return process_events(evprinter, infilename, outfilename, filter);
         }
+#if HAVE_SQLITE
+      default:
+        {
+          static constexpr const char* const default_name = "events.db";
+
+          const char* const filename = outfilename ? outfilename : default_name;
+
+          net::mon::event::printer::db::sqlite evprinter;
+
+          // Open database.
+          if (evprinter.open(filename)) {
+            // Initialize database.
+            if (evprinter.init()) {
+              return process_events(evprinter, infilename, nullptr, filter);
+            } else {
+              fprintf(stderr, "Error initializing database.\n");
+            }
+          } else {
+            fprintf(stderr, "Error opening database '%s'.\n", filename);
+          }
+
+          if (filter) {
+            delete filter;
+          }
+
+          return -1;
+        }
+#endif // HAVE_SQLITE
     }
   }
 
@@ -174,6 +213,10 @@ bool parse_arguments(int argc,
             out = output::javascript;
           } else if (strcasecmp(argv[i + 1], "csv") == 0) {
             out = output::csv;
+#if HAVE_SQLITE
+          } else if (strcasecmp(argv[i + 1], "sqlite") == 0) {
+            out = output::sqlite;
+#endif // HAVE_SQLITE
           } else {
             fprintf(stderr, "Invalid output '%s'.\n\n", argv[i + 1]);
             return false;
@@ -381,7 +424,11 @@ void usage(const char* program)
   fprintf(stderr, "  --output <output>\n");
   fprintf(stderr,
           "    <output> ::= \"header\" | \"human-readable\" | \"json\" | "
-          "\"javascript\" | \"csv\"\n");
+          "\"javascript\" | \"csv\""
+#if HAVE_SQLITE
+          " | \"sqlite\""
+#endif
+          "\n");
 
   fprintf(stderr, "    Default: \"human-readable\"\n");
 

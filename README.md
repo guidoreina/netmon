@@ -70,6 +70,7 @@ The event files can be viewed using `evreader`, which can dump the events in the
 * JSON
 * Javascript
 * CSV
+* SQLite database.
 
 `evreader` has a DNS cache for IPv4 and a DNS cache for IPv6 and can provide (when possible) the source hostname and the destination hostname.
 
@@ -221,7 +222,7 @@ Options:
     <filename>: Name of the file where to save the output.
     Default: standard output.
   --output <output>
-    <output> ::= "header" | "human-readable" | "json" | "javascript" | "csv"
+    <output> ::= "header" | "human-readable" | "json" | "javascript" | "csv" | "sqlite"
     Default: "human-readable"
   --format <format>
     <format> ::= "pretty-print" | "compact"
