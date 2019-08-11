@@ -74,6 +74,9 @@ namespace net {
               char _M_src[INET6_ADDRSTRLEN];
               char _M_dst[INET6_ADDRSTRLEN];
 
+              // Configure.
+              bool configure();
+
               // Create tables.
               bool create_tables();
 
@@ -93,6 +96,10 @@ namespace net {
                         const Event& ev,
                         const char* srchost,
                         const char* dsthost);
+
+              // Disable copy constructor and assignment operator.
+              sqlite(const sqlite&) = delete;
+              sqlite& operator=(const sqlite&) = delete;
           };
 
           inline sqlite::sqlite()
@@ -125,7 +132,8 @@ namespace net {
 
           inline bool sqlite::init()
           {
-            return ((create_tables()) &&
+            return ((configure()) &&
+                    (create_tables()) &&
                     (create_indices()) &&
                     (prepare_statements()));
           }

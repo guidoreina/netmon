@@ -200,6 +200,20 @@ net::mon::event::printer::db::sqlite::print(uint64_t nevent,
   }
 }
 
+bool net::mon::event::printer::db::sqlite::configure()
+{
+  static constexpr const char* const commands =
+    "PRAGMA journal_mode = OFF;"
+    "PRAGMA synchronous = OFF;";
+
+  // Execute statements.
+  return (sqlite3_exec(_M_db,
+                       commands,
+                       nullptr,
+                       nullptr,
+                       nullptr) == SQLITE_OK);
+}
+
 bool net::mon::event::printer::db::sqlite::create_tables()
 {
   static constexpr const char* const commands =
